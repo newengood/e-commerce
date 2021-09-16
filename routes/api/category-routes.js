@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   // find one category by its `id` value
   try {
-    const categoryData = await Category.findByPK(req.params.id, {
+    const categoryData = await Category.findByPk(req.params.id, {
       // JOIN with products
       include: [{ model: Product}]
     });
@@ -46,11 +46,22 @@ router.put('/:id', (req, res) => {
     {
       id: req.body.id,
       category_name: req.body.category_name,
+      products: [
+        {
+          id: req.body.id,
+          product_name: req.body.product_name,
+          price: req.body.price,
+          stock: req.body.stock,
+          category_id: req.body.category_id,
+          category_id: req.body.category_id
+        }
+      ]
     },
     {
       where: {
         id: req.params.id,
       },
+      include: [{ model: Product }],
     }
   )
   .then((updatedCategory) => {
@@ -59,7 +70,7 @@ router.put('/:id', (req, res) => {
   .catch((error) => res.json(error));
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
   try {
     const categoryData = await Category.destroy({
